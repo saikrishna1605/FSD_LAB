@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Temperature Converter</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2dd67c;
+        }
+
+        .converter-box {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .converter-box h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .converter-box input, .converter-box select, .converter-box button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .converter-box p {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        button{
+            background-color: #c63030;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="converter-box">
+        <h1>Temperature Converter</h1>
+        <input type="number" id="temperature" placeholder="Enter temperature">
+        <select id="conversionType">
+            <option value="toCelsius">Convert to Celsius</option>
+            <option value="toFahrenheit">Convert to Fahrenheit</option>
+        </select>
+        <button onclick="convertTemperature()">Convert</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const temperatureConverter = {
+            toCelsius: (fahrenheit) => ((fahrenheit - 32) * 5) / 9,
+            toFahrenheit: (celsius) => (celsius * 9) / 5 + 32
+        };
+
+        function convertTemperature() {
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            const conversionType = document.getElementById('conversionType').value;
+            let result;
+
+            if (isNaN(temperature)) {
+                result = 'Please enter a valid number.';
+            } else {
+                if (conversionType === 'toCelsius') {
+                    result = temperatureConverter.toCelsius(temperature).toFixed(2);
+                    result = `${temperature}°F is equal to ${result}°C.`;
+                } else {
+                    result = temperatureConverter.toFahrenheit(temperature).toFixed(2);
+                    result = `${temperature}°C is equal to ${result}°F.`;
+                }
+            }
+
+            document.getElementById('result').innerText = result;
+        }
+    </script>
+</body>
+</html>
