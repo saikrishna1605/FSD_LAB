@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .content-box {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+        }
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group input {
+            padding: 5px;
+            margin: 5px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .balance {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-box">
+        <h2>Bank Account</h2>
+        <div class="input-group">
+            <label for="accountHolder">Account Holder:</label>
+            <input type="text" id="accountHolder" placeholder="Enter account holder name">
+        </div>
+        <div class="input-group">
+            <label for="initialBalance">Initial Balance:</label>
+            <input type="number" id="initialBalance" placeholder="Enter initial balance">
+        </div>
+        <div class="input-group">
+            <button class="button" onclick="createAccount()">Create Account</button>
+        </div>
+        <div class="input-group">
+            <label for="depositAmount">Deposit Amount:</label>
+            <input type="number" id="depositAmount" placeholder="Enter deposit amount">
+            <button class="button" onclick="deposit()">Deposit</button>
+        </div>
+        <div class="input-group">
+            <label for="withdrawAmount">Withdraw Amount:</label>
+            <input type="number" id="withdrawAmount" placeholder="Enter withdrawal amount">
+            <button class="button" onclick="withdraw()">Withdraw</button>
+        </div>
+        <div class="input-group">
+            <label for="transferAmount">Transfer Amount:</label>
+            <input type="number" id="transferAmount" placeholder="Enter transfer amount">
+            <button class="button" onclick="transfer()">Transfer</button>
+        </div>
+        <div class="balance" id="balanceDisplay">Balance: $0</div>
+    </div>
+    <script>
+        class BankAccount {
+            constructor(accountHolder, balance = 0) {
+                this.accountHolder = accountHolder;
+                this.balance = balance;
+            }
+            deposit(amount) {
+                if (amount > 0) {
+                    this.balance += amount;
+                    displayBalance();
+                } else {
+                    alert("Deposit amount must be positive.");
+                }
+            }
+            withdraw(amount) {
+                if (amount > 0) {
+                    if (amount <= this.balance) {
+                        this.balance -= amount;
+                        displayBalance();
+                    } else {
+                        alert("Insufficient balance.");
+                    }
+                } else {
+                    alert("Withdrawal amount must be positive.");
+                }
+            }
+            transfer(account, amount) {
+                if (amount > 0) {
+                    if (amount <= this.balance) {
+                        this.balance -= amount;
+                        account.deposit(amount);
+                        displayBalance();
+                    } else {
+                        alert("Insufficient balance.");
+                    }
+                } else {
+                    alert("Transfer amount must be positive.");
+                }
+            }
+        }
+        let myAccount;
+        function createAccount() {
+            const accountHolder = document.getElementById("accountHolder").value;
+            const initialBalance = parseFloat(document.getElementById("initialBalance").value);
+            if (accountHolder && !isNaN(initialBalance)) {
+                myAccount = new BankAccount(accountHolder, initialBalance);
+                displayBalance();
+                alert("Account created successfully!");
+            } else {
+                alert("Please provide a valid account holder name and balance.");
+            }
+        }
+        function deposit() {
+            const amount = parseFloat(document.getElementById("depositAmount").value);
+            if (myAccount && !isNaN(amount)) {
+                myAccount.deposit(amount);
+            } else {
+                alert("Please create an account first and enter a valid deposit amount.");
+            }
+        }
+        function withdraw() {
+            const amount = parseFloat(document.getElementById("withdrawAmount").value);
+            if (myAccount && !isNaN(amount)) {
+                myAccount.withdraw(amount);
+            } else {
+                alert("Please create an account first and enter a valid withdrawal amount.");
+            }
+        }
+        function transfer() {
+            const amount = parseFloat(document.getElementById("transferAmount").value);
+            if (myAccount && !isNaN(amount)) {
+                myAccount.transfer(myAccount, amount);
+            } else {
+                alert("Please create an account first and enter a valid transfer amount.");
+            }
+        }
+        function displayBalance() {
+            if (myAccount) {
+                document.getElementById("balanceDisplay").innerText = `Balance: $${myAccount.balance.toFixed(2)}`;
+            }
+        }
+    </script>
+</body>
+</html>
