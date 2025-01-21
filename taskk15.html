@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+   
+</head>
+<body>
+   
+
+    <form id="guessForm">
+        <label for="guess">Enter your guess:</label>
+        <input type="number" id="guess" name="guess" min="1" max="100" required>
+        <button type="submit">Submit Guess</button>
+    </form>
+
+    <script>
+        class Game {
+            constructor() {
+                this.targetNumber = this.generateRandomNumber();
+                this.attempts = 0;
+            }
+
+            
+            generateRandomNumber() {
+                return Math.floor(Math.random() * 100) + 1;
+            }
+
+            
+            checkGuess(userGuess) {
+                this.attempts++;
+                if (userGuess === this.targetNumber) {
+                    const message = `Congratulations! You've guessed the correct number in ${this.attempts} attempts.`;
+                    this.resetGame();
+                    return message;
+                } else if (userGuess < this.targetNumber) {
+                    return 'Try again! Hint: Higher!';
+                } else if (userGuess > this.targetNumber) {
+                    return 'Try again! Hint: Lower!';
+                } else {
+                    return 'Invalid guess!';
+                }
+            }
+
+        
+            resetGame() {
+                this.targetNumber = this.generateRandomNumber();
+                this.attempts = 0;
+            }
+        }
+
+        const game = new Game();
+
+        
+        document.getElementById('guessForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const userGuess = Number(document.getElementById('guess').value);
+            const message = game.checkGuess(userGuess);
+            alert(message);
+
+            if (!message.includes('Congratulations')) {
+                document.getElementById('guess').value = ''; 
+            }
+        });
+    </script>
+</body>
+</html>
