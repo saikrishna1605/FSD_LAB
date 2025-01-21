@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        table {
+            width: 50%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    <button id="addItemButton">Add Item</button>
+    <div id="cartContents">
+        <h2>Cart Items</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="cartTableBody">
+                <!-- Dynamically populated rows -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        class Item {
+            constructor(name, price, quantity) {
+                this.name = name;
+                this.price = parseFloat(price).toFixed(2);
+                this.quantity = parseInt(quantity, 10);
+            }
+
+            updateQuantity(newQuantity) {
+                this.quantity = newQuantity;
+            }
+
+            getTotalPrice() {
+                return (this.price * this.quantity).toFixed(2);
+            }
+        }
+
+        class Cart {
+            constructor() {
+                this.items = JSON.parse(localStorage.getItem('cartItems')) || [];
+                this.displayCartContents();
+            }
+
+            addItem(item) {
+                const existingItem = this.items.find(cartItem => cartItem.name === item.name);
+                if (existingItem) {
+                    existingItem.updateQuantity(existingItem.quantity + item.quantity);
+                } else {
+                    this.items.push(item);
+                }
+                this.saveToLocalStorage();
+                this.displayCartContents();
+            }
+
+            removeItem(itemName) {
+                this.items = this.items.filter(item => item.name !== itemName);
+                this.saveToLocalStorage();
+                this.displayCartContents();
+            }
+
+            updateItemQuantity(itemName, newQuantity) {
+                const item = this.items.find(cartItem => cartItem.name === itemName);
+                if (item) {
+                    item.updateQuantity(newQuantity);
+                    this.saveToLocalStorage();
+                    this.displayCartContents();
+                }
+            }
+
+            calculateTotalPrice() {
+                return this.items.reduce((total, item) => total + parseFloat(item.getTotalPrice()), 0).toFixed(2);
+            }
+
+            applyDiscount(code) {
+                if (code === 'DISCOUNT10') {
+                    const totalPrice = this.calculateTotalPrice();
+                    const discountedPrice = (totalPrice * 0.9).toFixed(2); // 10% discount
+                    return discountedPrice;
+                } else {
+                    console.log('Invalid discount code.');
+                    return this.calculateTotalPrice();
+                }
+            }
+
+            saveToLocalStorage() {
+                localStorage.setItem('cartItems', JSON.stringify(this.items));
+            }
+
+            displayCartContents() {
+                const cartTableBody = document.getElementById('cartTableBody');
+                cartTableBody.innerHTML = '';
+                this.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td>
+                            <input type="number" value="${item.quantity}" min="1" 
+                            data-name="${item.name}" class="quantity-input">
+                        </td>
+                        <td>${item.getTotalPrice()}</td>
+                        <td>
+                            <button data-name="${item.name}" class="remove-button">Remove</button>
+                        </td>
+                    `;
+                    cartTableBody.appendChild(row);
+                });
+
+              
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    input.addEventListener('input', this.handleQuantityChange.bind(this));
+                });
+
+                document.querySelectorAll('.remove-button').forEach(button => {
+                    button.addEventListener('click', this.handleRemoveItem.bind(this));
+                });
+
+                
+                const totalElement = document.createElement('tr');
+                totalElement.innerHTML = `
+                    <td colspan="3">Total</td>
+                    <td>${this.calculateTotalPrice()}</td>
+                    <td></td>
+                `;
+                cartTableBody.appendChild(totalElement);
+            }
+
+            handleQuantityChange(event) {
+                const newQuantity = parseInt(event.target.value, 10);
+                const itemName = event.target.dataset.name;
+                this.updateItemQuantity(itemName, newQuantity);
+            }
+
+            handleRemoveItem(event) {
+                const itemName = event.target.dataset.name;
+                this.removeItem(itemName);
+            }
+        }
+
+        const cart = new Cart();
+
+        
+        document.getElementById('addItemButton').addEventListener('click', () => {
+            const name = prompt('Enter item name:');
+            const price = prompt('Enter item price:');
+            const quantity = prompt('Enter item quantity:');
+            if (name && price && quantity) {
+                cart.addItem(new Item(name, price, quantity));
+            }
+        });
+    </script>
+</body>
+</html>
