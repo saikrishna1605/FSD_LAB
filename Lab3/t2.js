@@ -1,13 +1,13 @@
 function mul(num,callback){
-    callback(num*200);
+    callback(num*2);
 }
 
 function sub(num,callback){
-   callback(num-350);
+   callback(num-3);
 }
 
 function add(num,callback){
-   callback(num+100);
+   callback(num+10);
 }
 
 mul(2,(res)=>{
