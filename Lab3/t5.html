@@ -26,11 +26,21 @@
 </head>
 <body>
     <script>
-
+       
     </script>
     <div class="container">
         <div class="a">
-        User: <input type="text" name="User">
+        User: <input type="text" name="User"><br><br>
+        Payment method :
+        <select name="language" id="language">
+            <option value="upi">UPI</option>
+            <option value="bank">BANK</option>
+            <option value="netbanking" >NETBANKING</option>
+            <option value="card" selected>CARD</option>
+            <option value="cash"disabled>CASH</option>
+        </select><br><br>
+        Amount : <input type="number" name="amount"><br><br>
+        <button onclick="window.location.href = 'index.html';">Submit  </button>
         </div>
     </div>
     
