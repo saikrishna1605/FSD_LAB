@@ -12,7 +12,7 @@ function add(num,callback){
 
 mul(2,(res)=>{
    sub(res,(sres)=>{
-       add(sres,(ares)=>{
+       add(sres,(ares)=>{ 
       console.log(ares) })
    })
 })
