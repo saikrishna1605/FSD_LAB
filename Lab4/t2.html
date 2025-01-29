@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Information</title>
+    <style>
+        
+        
+    </style>
+</head>
+<body>
+    <h1>Weather Information for Hyderabad</h1>
+    <div id="weatherDetails"></div>
+    
+    <script>
+        async function climate() {
+            let weather = await fetch("https://api.openweathermap.org/data/2.5/weather?q=Hyderabad&appid=48e2e874452e33ed8194ae76255aaa21&units=metric");
+            let data = await weather.json();
+            let city = data.name;
+            let temp_min = data.main.temp_min;
+            let temp_max = data.main.temp_max;
+            let humidity = data.main.humidity;
+            let weatherDetails = `
+                <p><strong>City:</strong> ${city}</p>
+                <p><strong>Minimum Temperature:</strong> ${temp_min}°C</p>
+                <p><strong>Maximum Temperature:</strong> ${temp_max}°C</p>
+                <p><strong>Humidity:</strong> ${humidity}%</p>
+            `;
+            document.getElementById("weatherDetails").innerHTML = weatherDetails;
+        }
+        
+        climate();
+    </script>
+</body>
+</html>
