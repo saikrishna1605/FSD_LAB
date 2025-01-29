@@ -7,7 +7,7 @@
 </head>
 <body>
     
-    <table border="1">
+    <table border="2">
         <thead>
             <tr>
                 <th>User ID</th>
@@ -25,10 +25,12 @@
         async function fetchData() {
             try {
                 
-                let response = await fetch("https://jsonplaceholder.typicode.com/todos");
-                let data = await response.json()
+                let res = await fetch("https://jsonplaceholder.typicode.com/todos");
+                let data = await res.json()
                 let tb = document.getElementById("data-table-body");
-                data.forEach(item => {
+                for(let i=0;i<10;i++)
+                {    
+                    item=data[i];
                     let row = document.createElement("tr");
                     let userIdCell = document.createElement("td");
                     userIdCell.textContent = item.userId;
@@ -36,15 +38,14 @@
                     let idCell = document.createElement("td");
                     idCell.textContent = item.id;
                     row.appendChild(idCell);
-                    let titleCell = document.createElement("td");
-                    titleCell.textContent = item.title;
-                    row.appendChild(titleCell);
-
-                    let completedCell = document.createElement("td");
-                    completedCell.textContent = item.completed ? "Yes" : "No";
-                    row.appendChild(completedCell);
+                    let tc = document.createElement("td");
+                    tc.textContent = item.title;
+                    row.appendChild(tc);
+                    let cc = document.createElement("td");
+                    cc.textContent = item.completed ? "Yes" : "No";
+                    row.appendChild(cc);
                     tb.appendChild(row);
-                });
+                };
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
