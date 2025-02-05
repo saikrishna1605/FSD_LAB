@@ -1,2 +1,2 @@
 # FSD_LAB
-Tasks of GitHub
+Tasks of the programs which are executed in FSD Lab.
