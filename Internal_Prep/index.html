@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+</head>
+<body>
+  <div>
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="text" id="uname" placeholder="Enter name" required>
+      <input type="email" id="uemail" placeholder="Enter email" required>
+      <input type="password" id="upassword" placeholder="Enter password" required>
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="lemail" placeholder="Enter email" required>
+      <input type="password" id="lpassword" placeholder="Enter password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <div id="taskUI" style="display: none;">
+    <h2>Welcome! You are logged in</h2>
+    <button onclick="logout()">Logout</button>
+
+    <!-- Create Task -->
+    <h3>Create Task</h3>
+    <input type="text" id="taskTitle" placeholder="Title" required>
+    <input type="text" id="taskDesc" placeholder="Description">
+    <input type="date" id="taskDue">
+    <select id="taskPriority">
+      <option value="high">High</option>
+      <option value="medium" selected>Medium</option>
+      <option value="low">Low</option>
+    </select>
+    <button onclick="createTask()">Create Task</button>
+
+    <!-- All Tasks -->
+    <h3>My Tasks</h3>
+    <button onclick="fetchTasks()">Load Tasks</button>
+    <div id="taskList"></div>
+  </div>
+
+  <script>
+    let authToken = "";
+
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = uname.value, email = uemail.value, password = upassword.value;
+      const res = await fetch("/register", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      alert(data.message || "Registered!");
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = lemail.value, password = lpassword.value;
+      const res = await fetch("/login", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.token) {
+        authToken = data.token;
+        document.getElementById("taskUI").style.display = "block";
+      }
+      alert(data.message || "Login done.");
+    });
+
+    function logout() {
+      authToken = "";
+      document.getElementById("taskUI").style.display = "none";
+      alert("Logged out.");
+    }
+
+    async function createTask() {
+      const title = taskTitle.value;
+      const description = taskDesc.value;
+      const dueDate = taskDue.value;
+      const priority = taskPriority.value;
+
+      const res = await fetch("/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ title, description, dueDate, priority })
+      });
+
+      const data = await res.json();
+      alert(data.message || "Created.");
+      fetchTasks();
+    }
+
+    async function fetchTasks() {
+      const res = await fetch("/tasks", {
+        headers: { "Authorization": `Bearer ${authToken}` }
+      });
+      const data = await res.json();
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      if (Array.isArray(data)) {
+        data.forEach(task => {
+          const item = document.createElement("div");
+          item.innerHTML = `
+            <h3>${task.title}</h3>
+            Status: ${task.status} | Priority: ${task.priority || "N/A"} <br>
+            Due: ${new Date(task.dueDate).toLocaleDateString()}<br>
+            <button onclick="markAsCompleted('${task._id}')">✅ Complete</button>
+          `;
+          list.appendChild(item);
+        });
+      }
+    }
+
+    async function markAsCompleted(id) {
+      const res = await fetch(`/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ status: "completed" })
+      });
+      const data = await res.json();
+      alert(data.message || "Updated.");
+      fetchTasks();
+    }
+  </script>
+</body>
+</html>
